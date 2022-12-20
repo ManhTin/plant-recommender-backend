@@ -13,8 +13,6 @@ Getting started
     - follow the setup guide from step 4 if you use another method of managing virtual environments
 - Setup project
     1. `cd` into this directory
-    1. Create virtual environment for project: `conda create --name plant-recommender-app python=3.10`
-    1. Activate virtual environment of project: `conda activate plant-recommender-app`
-    1. Install dependencies into virtual env: `pip install -r requirements.txt`
-    1. Run database migrations: `python manage.py migrate`
-    1. Start server: `python manage.py runserver`
+    1. Create virtual environment for project: `conda create --name plant-recommender-backend python=3.11`
+    1. Activate virtual environment of project: `conda activate plant-recommender-backend`
+
