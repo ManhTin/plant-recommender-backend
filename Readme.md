@@ -15,4 +15,4 @@ Getting started
     1. `cd` into this directory
     1. Create virtual environment for project: `conda create --name plant-recommender-backend python=3.11`
     1. Activate virtual environment of project: `conda activate plant-recommender-backend`
-
+    1. Install dependencies: `pip install -r requirements.txt`
