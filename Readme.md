@@ -1,4 +1,4 @@
-# Plant Recommender App
+# Plant Recommender Backend
 Web app for the Homeplant Recommender System project in Data Integration 22/23 at WWU Münster
 
 ## Installation and Setup
