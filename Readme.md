@@ -16,3 +16,14 @@ Getting started
     1. Create virtual environment for project: `conda create --name plant-recommender-backend python=3.11`
     1. Activate virtual environment of project: `conda activate plant-recommender-backend`
     1. Install dependencies: `pip install -r requirements.txt`
+
+# User Profile
+
+- Age
+- Location
+    -Temperature/Amount of sunlight 
+    -Humidity
+- Time availability
+- Plant size
+- Indoor or Outdoor
+- Plant/Fruit colour
