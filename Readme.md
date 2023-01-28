@@ -16,12 +16,16 @@ Getting started
     1. Create virtual environment for project: `conda create --name plant-recommender-backend python=3.11`
     1. Activate virtual environment of project: `conda activate plant-recommender-backend`
     1. Install dependencies: `pip install -r requirements.txt`
+- Run server
+    1. `cd` into this directory
+    1. Activate virtual environment of project: `conda activate plant-recommender-backend`
+    1. Run server: `uvicorn main:app --reload`
 
 # User Profile
 
 - Age
 - Location
-    -Temperature/Amount of sunlight 
+    -Temperature/Amount of sunlight
     -Humidity
 - Time availability
 - Plant size
