@@ -4,16 +4,19 @@ import pandas as pd
 
 class Recommender:
 
-    def __init__(self):
-        plants_df = pd.read_csv('./data/plants_normalized.csv', sep=',', encoding='UTF-8',)
-        self.ATTRIBUTES = ['height', 'width', 'water', 'light', 'humidity', 'temperature', 'toxicity', 'difficulty']
+    def __init__(self, data_path):
+        plants_df = pd.read_csv(data_path, sep=',', encoding='UTF-8',)
+        self.ATTRIBUTES = [
+            'height', 'width', 'water', 'light', 'humidity',
+            'temperature', 'toxicity', 'difficulty', 'leaf_green',
+            'leaf_multicolored', 'leaf_oblong', 'leaf_oval', 'leaf_teardrop',
+            'leaf_triangular', 'leaf_spear', 'leaf_heart', 'leaf_wavy',
+            'leaf_palmate', 'leaf_split', 'leaf_round', 'leaf_ribbon',
+            'leaf_pattern', 'growth_cluster', 'growth_dense', 'growth_upright',
+            'growth_shrubby', 'growth_cascading', 'growth_tree']
         self.PLANTS = plants_df[['id', 'name'] + self.ATTRIBUTES]
 
-        self.NAMES = self.PLANTS['name']
-        self.INDICES = pd.Series(self.PLANTS.index, index=self.PLANTS['name'])
-
     def get_cosine_similarity(self, x, y):
-
         numerator = np.dot(x, y)
         denominator = np.linalg.norm(x) * np.linalg.norm(y)
 
@@ -28,8 +31,10 @@ class Recommender:
 
     def get_recommendations(self, plant_id, n=10):
 
+        # convert global plant_id to dataframe index for querying
+        query_id = plant_id - 1
         # query item from id
-        query_item = self.PLANTS.loc[self.PLANTS.id == plant_id][self.ATTRIBUTES]
+        query_item = self.PLANTS.iloc[query_id][self.ATTRIBUTES]
         query_item = query_item.to_numpy()
 
         # compute cosine similarities between queryitem and all
@@ -38,7 +43,7 @@ class Recommender:
         for i in range(len(self.PLANTS)):
 
             # skip the query item
-            if i != plant_id - 1:
+            if i != query_id:
 
                 # get the i-th item
                 other_item = self.PLANTS.iloc[i][self.ATTRIBUTES]
@@ -57,8 +62,7 @@ class Recommender:
         # take the top n elements
         sorted_similarities = sorted_similarities[:n]
 
-        # get the corresponding plant indices
-        plant_indices = [pair[0] for pair in sorted_similarities]
+        # return list of global ids of the top n elements
+        return [pair[0] + 1 for pair in sorted_similarities]
 
-        # return the list of names
-        return self.NAMES.iloc[plant_indices]
+    #  TODO generate recommendations based on user input and list of plants
