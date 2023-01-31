@@ -14,6 +14,8 @@ with open(plants_data_path, 'r') as f:
     reader = csv.DictReader(f)
     plants_data = list(reader)
 
+# Endpoint definitions
+
 
 @app.get("/")
 async def root():
@@ -41,7 +43,13 @@ async def get_plant_pairs():
 async def recommendations_for_plant(plant_id: int):
     return recommender.get_recommendations_by_id(plant_id)
 
-# TODO endpoint for getting plant recommendations with user preferences and plant list
+
+@app.post("/recommendations_for_profile")
+async def recommendations_for_profile(user_profile: dict):
+    return recommender.get_recommendations_by_profile(user_profile)
+
+
+# Helper functions
 
 def __generate_plant_pairs():
     """

@@ -30,11 +30,11 @@ class Recommender:
 
         return sim
 
-    def get_recommendations_by_id(self, plant_id, n=10, similar_first=True, excluded_ids=None):
+    def get_recommendations_by_id(self, plant_id, n=10, similar_first=True):
         """
         Get list of ids of similar plants for a plant with a given plant_id.
         n = number of recommendations
-        similar_first = sort recommendations by descending order (best recommendations first)
+        similar_first = sort recommendations by best recommendations first
         excluded_ids = list of plant ids to exclude from recommendations
         """
         # convert global plant_id to dataframe index for querying
@@ -43,12 +43,27 @@ class Recommender:
         query_item = self.PLANTS.iloc[query_id][self.ATTRIBUTES]
         query_item = query_item.to_numpy()
 
-        return self.__get_recommendations(query_item, query_id, n, similar_first, excluded_ids)
+        return self.__get_recommendations(query_item, query_id, n=n, similar_first=similar_first)
+
+    def get_recommendations_by_profile(self, user_profile, n=10, similar_first=True):
+        """
+        Get list of ids of similar plants for a user_profile.
+        n = number of recommendations
+        similar_first = sort recommendations by best recommendations first
+        excluded_ids = list of plant ids to exclude from recommendations
+        """
+        user_profile_df = self.__parse_user_profile_to_df(user_profile)
+        # convert profile to numpy array
+        query_item = user_profile_df.to_numpy()
+
+        return self.__get_recommendations(
+            query_item, n=n, similar_first=similar_first, excluded_ids=user_profile['owned_plants'])
+
     def __get_recommendations(self, query_item, item_id=None, n=10, similar_first=True, excluded_ids=None):
         """
         Build list of recommendations for a given query item using cosine similarity.
         n = number of recommendations
-        descending = sort recommendations by descending order (best recommendations first)
+        similar_first = sort recommendations by best recommendations first
         excluded_ids = list of plant ids to exclude from recommendations
         """
         if excluded_ids is None:
@@ -59,7 +74,7 @@ class Recommender:
         for i in range(len(self.PLANTS)):
 
             # skip the query item
-            if i != item_id and i not in excluded_ids:
+            if i != item_id and i+1 not in excluded_ids:
 
                 # get the i-th item
                 other_item = self.PLANTS.iloc[i][self.ATTRIBUTES]
@@ -80,4 +95,18 @@ class Recommender:
         # return list of global ids of the top n elements
         return [pair[0] + 1 for pair in sorted_similarities]
 
-    #  TODO generate recommendations based on user input and list of plants
+    def __parse_user_profile_to_df(self, user_profile=None):
+        """
+        Parse user_profile into dataframe. Keep profile attributes from user_profile and
+        replace the rest of the attributes which are optical attributes with the average
+        of the liked plants attributes too build the profile.
+        """
+        # attributes we got from the user survey
+        profile_attributes = user_profile['profile']
+        liked_plants = self.PLANTS[self.PLANTS['id'].isin(user_profile['liked_plants'])]
+        # build profile df from average of liked plants attributes
+        profile = liked_plants[self.ATTRIBUTES].mean()
+        # replace attributes in profile w/ attributes from profile_attributes and keep the rest
+        profile.update(profile_attributes)
+
+        return profile[self.ATTRIBUTES]
