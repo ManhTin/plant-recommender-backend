@@ -17,6 +17,7 @@ class Recommender:
         self.PLANTS = plants_df[['id', 'name'] + self.ATTRIBUTES]
 
     def get_cosine_similarity(self, x, y):
+        """Compute cosine similarity between two numpy vectors."""
         numerator = np.dot(x, y)
         denominator = np.linalg.norm(x) * np.linalg.norm(y)
 
@@ -29,21 +30,36 @@ class Recommender:
 
         return sim
 
-    def get_recommendations(self, plant_id, n=10):
-
+    def get_recommendations_by_id(self, plant_id, n=10, similar_first=True, excluded_ids=None):
+        """
+        Get list of ids of similar plants for a plant with a given plant_id.
+        n = number of recommendations
+        similar_first = sort recommendations by descending order (best recommendations first)
+        excluded_ids = list of plant ids to exclude from recommendations
+        """
         # convert global plant_id to dataframe index for querying
         query_id = plant_id - 1
         # query item from id
         query_item = self.PLANTS.iloc[query_id][self.ATTRIBUTES]
         query_item = query_item.to_numpy()
 
+        return self.__get_recommendations(query_item, query_id, n, similar_first, excluded_ids)
+    def __get_recommendations(self, query_item, item_id=None, n=10, similar_first=True, excluded_ids=None):
+        """
+        Build list of recommendations for a given query item using cosine similarity.
+        n = number of recommendations
+        descending = sort recommendations by descending order (best recommendations first)
+        excluded_ids = list of plant ids to exclude from recommendations
+        """
+        if excluded_ids is None:
+            excluded_ids = []
         # compute cosine similarities between queryitem and all
         # other plants
         similarities = []
         for i in range(len(self.PLANTS)):
 
             # skip the query item
-            if i != query_id:
+            if i != item_id and i not in excluded_ids:
 
                 # get the i-th item
                 other_item = self.PLANTS.iloc[i][self.ATTRIBUTES]
@@ -55,9 +71,8 @@ class Recommender:
                 # store result in list
                 similarities.append((i, sim))
 
-        # sort pairs w.r.t. second entry (cosine similarities) in
-        # descending order (reverse=True)
-        sorted_similarities = sorted(similarities, key=lambda x: x[1], reverse=True)
+        # sort pairs w.r.t. second entry (cosine similarities) in descending order by default
+        sorted_similarities = sorted(similarities, key=lambda x: x[1], reverse=similar_first)
 
         # take the top n elements
         sorted_similarities = sorted_similarities[:n]

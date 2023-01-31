@@ -36,8 +36,8 @@ async def recommendations_from_plant(plant_id: int):
     return recommender.get_recommendations(plant_id)
 
 
-@app.get("/recommendations_from_profile/{plant_id}")
-async def recommendations_from_profile(plant_id: int):
-    return recommender.get_recommendations(plant_id)
+@app.get("/recommendations_for_plant/{plant_id}")
+async def recommendations_for_plant(plant_id: int):
+    return recommender.get_recommendations_by_id(plant_id)
 
 # TODO endpoint for getting plant recommendations with user preferences and plant list
